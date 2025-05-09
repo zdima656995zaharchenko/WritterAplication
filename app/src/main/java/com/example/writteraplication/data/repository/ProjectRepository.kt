@@ -20,5 +20,3 @@ class ProjectRepository(private val projectDao: ProjectDao) {
         projectDao.deleteProject(project)
     }
 }
-
-

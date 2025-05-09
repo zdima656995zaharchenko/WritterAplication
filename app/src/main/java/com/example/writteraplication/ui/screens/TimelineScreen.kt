@@ -30,12 +30,13 @@ fun TimelineScreen(
     if (showDialog) {
         AddTimelineDialog(
             onDismiss = { showDialog = false },
-            onAdd = { title, description, date ->
+            onAdd = { title, description, date, characters ->
                 timelineViewModel.addTimeline(
                     title = title,
                     description = description,
                     eventDate = date,
-                    projectId = projectId // ← Передано сюди
+                    projectId = projectId, // ← Передано сюди
+                    characters = characters
                 )
                 showDialog = false
             }
@@ -118,11 +119,12 @@ fun TimelineItem(
 @Composable
 fun AddTimelineDialog(
     onDismiss: () -> Unit,
-    onAdd: (String, String, String?) -> Unit
+    onAdd: (String, String, String?, List<String>) -> Unit
 ) {
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var date by remember { mutableStateOf("") }
+    val eventCharacters = remember { mutableStateListOf("") }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -153,7 +155,7 @@ fun AddTimelineDialog(
         },
         confirmButton = {
             TextButton(onClick = {
-                onAdd(title, description, date.ifBlank { null })
+                onAdd(title, description, date.ifBlank { null }, eventCharacters)
             }) {
                 Text("Додати")
             }

@@ -46,7 +46,8 @@ class TimelineViewModel(private val repository: TimelineRepository) : ViewModel(
         title: String,
         description: String,
         eventDate: String?,
-        projectId: Int
+        projectId: Int,
+        characters: List<String>
     ) {
         viewModelScope.launch {
             Log.d("TimelineViewModel", "🟡 Додаємо подію: $title ($projectId)")
@@ -54,7 +55,8 @@ class TimelineViewModel(private val repository: TimelineRepository) : ViewModel(
                 title = title,
                 description = description,
                 eventDate = eventDate,
-                projectId = projectId
+                projectId = projectId,
+                characters = characters
             )
             val result = repository.insertTimeline(timeline)
             Log.d("TimelineViewModel", "✅ Вставка завершена. ID нової події: $result")

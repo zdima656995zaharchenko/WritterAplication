@@ -52,6 +52,7 @@ fun TimelineDetailsScreen(
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var eventDate by remember { mutableStateOf("") }
+    val eventCharacters = remember { mutableStateListOf("") }
 
     LaunchedEffect(id) {
         if (id != -1) {
@@ -61,6 +62,8 @@ fun TimelineDetailsScreen(
                 title = it.title
                 description = it.description
                 eventDate = it.eventDate.orEmpty()
+                eventCharacters.clear()
+                eventCharacters.addAll(it.characters)
             }
         }
     }
@@ -117,8 +120,8 @@ fun TimelineDetailsScreen(
                         onExpandedChange = { expanded = !expanded }
                     ) {
                         OutlinedTextField(
-                            value = selectedCharacters.joinToString(", "),
-                            onValueChange = {},
+                            value = element.characters.joinToString(", "),
+                            onValueChange = { newCharacters -> timelineViewModel.updateEventElement(element.id, element.title, element.date, newCharacters.split(", ")) },
                             readOnly = true,
                             label = { Text("Персонажі") },
                             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
@@ -185,14 +188,16 @@ fun TimelineDetailsScreen(
                             title = title,
                             description = description,
                             eventDate = eventDate,
-                            projectId = projectId
+                            projectId = projectId,
+                            characters = eventCharacters
                         )
                     } else {
                         val updatedEvent = event!!.copy(
                             title = title,
                             description = description,
                             eventDate = eventDate.ifBlank { null },
-                            projectId = projectId
+                            projectId = projectId,
+                            characters = eventCharacters
                         )
                         timelineViewModel.updateTimeline(updatedEvent)
                     }
