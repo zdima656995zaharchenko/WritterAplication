@@ -1,0 +1,30 @@
+
+{
+  "project_info": {
+    "project_number": "805495970194",
+    "project_id": "writter-aplication",
+    "storage_bucket": "writter-aplication.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:805495970194:android:f12e53b5a0b3ca70eb494b",
+        "android_client_info": {
+          "package_name": "com.example.writteraplication"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBiYtNfe-fodzyOj1f21k1kP-04iYWI7PI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
