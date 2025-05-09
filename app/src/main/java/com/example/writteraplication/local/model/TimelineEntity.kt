@@ -10,7 +10,8 @@ data class TimelineEntity(
     @ColumnInfo(name = "project_id") val projectId: Int,
     val title: String,
     val description: String,
-    val eventDate: String? = null
+    val eventDate: String? = null,
+    @ColumnInfo(name = "characters") val characters: List<String> = emptyList() // Додано поле characters
 )
 
 

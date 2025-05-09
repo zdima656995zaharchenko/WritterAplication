@@ -1,17 +1,17 @@
-
 package com.example.writteraplication.local.model
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.example.writteraplication.local.model.ProjectDao
+import androidx.room.TypeConverters
 
 @Database(
     entities = [PlotEntity::class, CharacterEntity::class, ProjectEntity::class, NoteEntity::class, TimelineEntity::class],
-    version = 8,
+    version = 9,
     exportSchema = false
 )
+@TypeConverters(Converters::class) // Додано TypeConverters
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun plotDao(): PlotDao
@@ -19,7 +19,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun projectDao(): ProjectDao
     abstract fun noteDao(): NoteDao
     abstract fun timelineDao(): TimelineDao
-
 
     companion object {
         @Volatile
@@ -32,7 +31,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "app_database"
                 )
-                    .fallbackToDestructiveMigration() // Add this line to handle migration
+                    .fallbackToDestructiveMigration()
                     .build()
                 INSTANCE = instance
                 instance

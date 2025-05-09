@@ -61,6 +61,10 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
     implementation("com.google.firebase:firebase-analytics:22.4.0")
     implementation("com.google.firebase:firebase-auth:23.2.0")
+    implementation("androidx.compose.material:material-icons-extended:<version>")
+    implementation("androidx.compose.material3:material3:1.2.0")
+
+
 
     testImplementation("androidx.room:room-testing:2.7.1")
 

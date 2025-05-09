@@ -22,7 +22,11 @@ class MainActivity : ComponentActivity() {
         val plotRepository = PlotRepository(database.plotDao())
         val characterRepository = CharacterRepository(database.characterDao())
         val noteRepository = NoteRepository(database.noteDao())
-        val timelineRepository = TimelineRepository(database.timelineDao())
+        val timelineRepository = TimelineRepository(
+            database.timelineDao(),
+            database.characterDao()
+        )
+
 
         setContent {
             WritterApplicationTheme {
