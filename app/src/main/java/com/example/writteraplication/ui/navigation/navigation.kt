@@ -23,6 +23,7 @@ import com.example.writteraplication.viewmodel.NoteViewModelFactory
 import com.example.writteraplication.viewmodel.TimelineViewModel
 import com.example.writteraplication.viewmodel.TimelineViewModelFactory
 import com.example.writteraplication.viewmodel.SharedProjectViewModel
+import com.example.writteraplication.viewmodel.SettingsViewModel
 
 @Composable
 fun AppNavigation(
@@ -30,6 +31,7 @@ fun AppNavigation(
     characterRepository: CharacterRepository,
     noteRepository: NoteRepository,
     timelineRepository: TimelineRepository,
+    settingsViewModel: SettingsViewModel,
     navController: NavHostController = rememberNavController()
 ) {
     val plotsViewModel: PlotsViewModel = viewModel(factory = PlotsViewModelFactory(plotRepository))
@@ -169,7 +171,6 @@ fun AppNavigation(
             }
         }
 
-        // Notes navigation
         composable("notes/{projectId}") { backStackEntry ->
             val projectId = backStackEntry.arguments?.getString("projectId")?.toIntOrNull()
             if (projectId != null) {
@@ -232,7 +233,6 @@ fun AppNavigation(
             }
         }
 
-        // Екран деталей події
         composable("timeline_details/{id}/{projectId}") { backStackEntry ->
             val id = backStackEntry.arguments?.getString("id")?.toIntOrNull()
             val projectId = backStackEntry.arguments?.getString("projectId")?.toIntOrNull()
@@ -267,7 +267,7 @@ fun AppNavigation(
 
         composable("settings") {
             MainScaffold(navController = navController, screenTitle = "Налаштування", projectId = sharedProjectViewModel.currentProjectId) { padding ->
-                SettingsScreen(navController = navController, padding = padding)
+                SettingsScreen(viewModel = settingsViewModel, padding = padding)
             }
         }
 

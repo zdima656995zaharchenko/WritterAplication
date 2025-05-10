@@ -1,11 +1,11 @@
 
 package com.example.writteraplication.ui.screens
 
-
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -17,6 +17,11 @@ import com.example.writteraplication.local.model.AppDatabase
 import com.example.writteraplication.data.repository.ProjectRepository
 import com.example.writteraplication.viewmodel.ProjectViewModel
 import com.example.writteraplication.viewmodel.ProjectViewModelFactory
+import androidx.compose.ui.Alignment
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.Delete
+
 
 @Composable
 fun ProjectsScreen(navController: NavController, padding: PaddingValues) {
@@ -30,7 +35,7 @@ fun ProjectsScreen(navController: NavController, padding: PaddingValues) {
 
     // Завантаження проєктів при першому запуску
     LaunchedEffect(Unit) {
-        viewModel.getAllProjects()
+        viewModel.loadProjects()
     }
 
     Column(
@@ -67,9 +72,33 @@ fun ProjectsScreen(navController: NavController, padding: PaddingValues) {
                         },
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            Text(text = project.name, style = MaterialTheme.typography.titleMedium)
-                            Text(text = project.description, style = MaterialTheme.typography.bodyMedium)
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column {
+                                Text(text = project.name, style = MaterialTheme.typography.titleMedium)
+                                Text(text = project.description, style = MaterialTheme.typography.bodyMedium)
+                            }
+
+                            Row {
+                                IconButton(onClick = { viewModel.toggleFavorite(project) }) {
+                                    Icon(
+                                        imageVector = if (project.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                                        contentDescription = "Улюблене"
+                                    )
+                                }
+
+                                IconButton(onClick = { viewModel.deleteProject(project) }) {
+                                    Icon(
+                                        imageVector = Icons.Default.Delete,
+                                        contentDescription = "Видалити"
+                                    )
+                                }
+                            }
                         }
                     }
                 }

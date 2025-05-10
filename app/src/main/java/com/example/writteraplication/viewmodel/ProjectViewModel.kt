@@ -8,36 +8,49 @@ import com.example.writteraplication.data.repository.ProjectRepository
 import kotlinx.coroutines.launch
 
 class ProjectViewModel(private val repository: ProjectRepository) : ViewModel() {
+
     val projects = mutableStateListOf<ProjectEntity>()
+    val favoriteProjects = mutableStateListOf<ProjectEntity>()
 
-    fun insertProject(project: ProjectEntity) {
-        viewModelScope.launch {
-            repository.insertProject(project)
-            projects.add(project)
-        }
-    }
-
-    fun getAllProjects() {
+    fun loadProjects() {
         viewModelScope.launch {
             projects.clear()
             projects.addAll(repository.getAllProjects())
         }
     }
 
-    fun getProjectById(id: Int): ProjectEntity? {
-        var project: ProjectEntity? = null
+    fun getFavoriteProjects() {
         viewModelScope.launch {
-            project = repository.getProjectById(id)
+            favoriteProjects.clear()
+            favoriteProjects.addAll(repository.getFavoriteProjects())
         }
-        return project
+    }
+
+    fun getProjectById(id: Int, onResult: (ProjectEntity?) -> Unit) {
+        viewModelScope.launch {
+            val project = repository.getProjectById(id)
+            onResult(project)
+        }
+    }
+
+    fun toggleFavorite(project: ProjectEntity) {
+        viewModelScope.launch {
+            val updatedProject = project.copy(isFavorite = !project.isFavorite)
+            repository.updateProject(updatedProject)
+            loadProjects()
+            getFavoriteProjects()
+        }
     }
 
     fun deleteProject(project: ProjectEntity) {
         viewModelScope.launch {
             repository.deleteProject(project)
-            projects.remove(project)
+            loadProjects()
+            getFavoriteProjects()
         }
     }
 }
+
+
 
 

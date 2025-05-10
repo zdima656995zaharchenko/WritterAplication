@@ -8,7 +8,7 @@ import androidx.room.TypeConverters
 
 @Database(
     entities = [PlotEntity::class, CharacterEntity::class, ProjectEntity::class, NoteEntity::class, TimelineEntity::class],
-    version = 9,
+    version = 10,
     exportSchema = false
 )
 @TypeConverters(Converters::class) // Додано TypeConverters
@@ -31,6 +31,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "app_database"
                 )
+                    .fallbackToDestructiveMigration()
                     .build()
                 INSTANCE = instance
                 instance
