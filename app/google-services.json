@@ -1,9 +1,10 @@
 
+
 {
   "project_info": {
     "project_number": "805495970194",
     "project_id": "writter-aplication",
-    "storage_bucket": "writter-aplication.appspot.com"
+    "storage_bucket": "writter-aplication.firebasestorage.app"
   },
   "client": [
     {

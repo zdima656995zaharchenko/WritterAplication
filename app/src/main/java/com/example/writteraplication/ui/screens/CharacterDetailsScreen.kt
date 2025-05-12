@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.writteraplication.viewmodel.CharacterViewModel
 import com.example.writteraplication.local.model.CharacterEntity
+import kotlinx.coroutines.launch
 
 @Composable
 fun CharacterDetailsScreen(
@@ -29,6 +30,9 @@ fun CharacterDetailsScreen(
     var personality by remember { mutableStateOf("") }
     var abilities by remember { mutableStateOf("") }
     var notes by remember { mutableStateOf("") }
+
+    val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(characterId) {
         if (characterId != -1) {
@@ -125,6 +129,21 @@ fun CharacterDetailsScreen(
                 Text("Назад")
             }
         }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(
+            onClick = {
+                characterViewModel.fetchCharactersFromCloud()
+                coroutineScope.launch {
+                    snackbarHostState.showSnackbar("✅ Синхронізовано з хмарою")
+                }
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Синхронізувати з хмарою")
+        }
     }
 }
+
 

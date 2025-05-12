@@ -5,10 +5,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.writteraplication.local.model.CharacterEntity
 import com.example.writteraplication.data.repository.CharacterRepository
+import com.example.writteraplication.data.repository.FirebaseCharacterRepository
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
-class CharacterViewModel(private val repository: CharacterRepository) : ViewModel() {
+class CharacterViewModel(
+    private val repository: CharacterRepository,
+    private val firebaseCharacterRepository: FirebaseCharacterRepository
+) : ViewModel() {
 
     private val _characters = MutableStateFlow<List<CharacterEntity>>(emptyList())
     val characters: StateFlow<List<CharacterEntity>> = _characters.asStateFlow()
@@ -52,7 +56,7 @@ class CharacterViewModel(private val repository: CharacterRepository) : ViewMode
             val result = repository.insertCharacter(character)
             Log.d("CharacterViewModel", "✅ Вставка завершена. ID нового персонажа: $result")
 
-            // Оновити список після вставки
+            firebaseCharacterRepository.saveCharacter(character) // 🔄 синхронізація з хмарою
             loadCharactersByProject(projectId)
         }
     }
@@ -60,6 +64,7 @@ class CharacterViewModel(private val repository: CharacterRepository) : ViewMode
     fun updateCharacter(character: CharacterEntity) {
         viewModelScope.launch {
             repository.updateCharacter(character)
+            firebaseCharacterRepository.saveCharacter(character) // 🔄 оновлення в хмарі
             loadCharactersByProject(character.projectId)
         }
     }
@@ -67,11 +72,19 @@ class CharacterViewModel(private val repository: CharacterRepository) : ViewMode
     fun removeCharacter(character: CharacterEntity) {
         viewModelScope.launch {
             repository.deleteCharacter(character)
+            // (опціонально) firebaseRepository.deleteCharacter(character)
             loadCharactersByProject(character.projectId)
         }
     }
 
     suspend fun getCharacterById(id: Int): CharacterEntity? {
         return repository.getCharacterById(id)
+    }
+
+    fun fetchCharactersFromCloud() {
+        viewModelScope.launch {
+            val cloudCharacters = firebaseCharacterRepository.getCharacters()
+            _characters.value = cloudCharacters
+        }
     }
 }

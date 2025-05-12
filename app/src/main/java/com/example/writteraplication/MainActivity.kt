@@ -12,6 +12,7 @@ import com.example.writteraplication.data.repository.CharacterRepository
 import com.example.writteraplication.data.repository.NoteRepository
 import com.example.writteraplication.data.repository.TimelineRepository
 import com.example.writteraplication.data.repository.FirebaseNoteRepository
+import com.example.writteraplication.data.repository.FirebaseCharacterRepository
 import com.example.writteraplication.local.model.AppDatabase
 import com.example.writteraplication.ui.navigation.AppNavigation
 import com.example.writteraplication.ui.theme.AppTheme
@@ -19,11 +20,14 @@ import com.example.writteraplication.viewmodel.SettingsViewModel
 import com.example.writteraplication.viewmodel.SettingsViewModelFactory
 import android.content.Context
 import android.content.res.Configuration
+import com.google.firebase.FirebaseApp
 import java.util.Locale
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        FirebaseApp.initializeApp(this)
 
         val database = AppDatabase.getDatabase(applicationContext)
         val plotRepository = PlotRepository(database.plotDao())
@@ -32,6 +36,7 @@ class MainActivity : ComponentActivity() {
         val timelineRepository = TimelineRepository(database.timelineDao(), database.characterDao())
 
         val firebaseRepository = FirebaseNoteRepository()
+        val firebaseCharacterRepository = FirebaseCharacterRepository()
         // Create ThemePreferenceManager and LanguagePreferenceManager
         val themeManager = ThemePreferenceManager(applicationContext)
         val languageManager = LanguagePreferenceManager(applicationContext)
@@ -45,6 +50,7 @@ class MainActivity : ComponentActivity() {
                     characterRepository = characterRepository,
                     noteRepository = noteRepository,
                     firebaseRepository = firebaseRepository,
+                    firebaseCharacterRepository = firebaseCharacterRepository,
                     timelineRepository = timelineRepository,
                     settingsViewModel = settingsViewModel
                 )
