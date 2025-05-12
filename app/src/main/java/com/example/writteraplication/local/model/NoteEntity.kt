@@ -9,9 +9,9 @@ import androidx.room.ColumnInfo
 data class NoteEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     @ColumnInfo(name = "project_id") val projectId: Int, // 🔗 зв'язок з проєктом
-    val title: String,
-    val content: String,
-    val timestamp: Long
+    val title: String = " ",
+    val content: String = " ",
+    val timestamp: Long = 0L
 )
 
 

@@ -6,10 +6,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.writteraplication.local.model.NoteEntity
 import com.example.writteraplication.data.repository.NoteRepository
+import com.example.writteraplication.data.repository.FirebaseNoteRepository
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
-class NoteViewModel(private val repository: NoteRepository) : ViewModel() {
+class NoteViewModel(
+    private val repository: NoteRepository,
+    private val firebaseRepository: FirebaseNoteRepository
+) : ViewModel() {
 
     private val _notes = MutableStateFlow<List<NoteEntity>>(emptyList())
     val notes: StateFlow<List<NoteEntity>> = _notes.asStateFlow()
@@ -18,19 +22,12 @@ class NoteViewModel(private val repository: NoteRepository) : ViewModel() {
         viewModelScope.launch {
             repository.getNotesByProject(projectId)
                 .catch { e -> Log.e("NoteViewModel", "Помилка завантаження нотаток", e) }
-                .collect { notes ->
-                    _notes.value = notes
-                }
+                .collect { notes -> _notes.value = notes }
         }
     }
 
-    fun addNote(
-        title: String,
-        content: String,
-        projectId: Int
-    ) {
+    fun addNote(title: String, content: String, projectId: Int) {
         viewModelScope.launch {
-            Log.d("NoteViewModel", "🟡 Додаємо нотатку: $title ($projectId)")
             val note = NoteEntity(
                 title = title,
                 content = content,
@@ -38,9 +35,11 @@ class NoteViewModel(private val repository: NoteRepository) : ViewModel() {
                 projectId = projectId
             )
             val result = repository.insertNote(note)
-            Log.d("NoteViewModel", "✅ Вставка завершена. ID нової нотатки: $result")
+            Log.d("NoteViewModel", "✅ Локально збережено. ID: $result")
 
-            // Оновити список після вставки
+            // Синхронізуємо в хмару
+            firebaseRepository.saveNote(note)
+
             loadNotesByProject(projectId)
         }
     }
@@ -48,6 +47,7 @@ class NoteViewModel(private val repository: NoteRepository) : ViewModel() {
     fun updateNote(note: NoteEntity) {
         viewModelScope.launch {
             repository.updateNote(note)
+            firebaseRepository.saveNote(note) // оновлюємо і в хмарі
             loadNotesByProject(note.projectId)
         }
     }
@@ -55,12 +55,20 @@ class NoteViewModel(private val repository: NoteRepository) : ViewModel() {
     fun removeNote(note: NoteEntity) {
         viewModelScope.launch {
             repository.deleteNote(note)
+            // (опціонально) firebaseRepository.deleteNote(note)
             loadNotesByProject(note.projectId)
         }
     }
 
     suspend fun getNoteById(id: Int): NoteEntity? {
         return repository.getNoteById(id)
+    }
+
+    fun fetchNotesFromCloud() {
+        viewModelScope.launch {
+            val cloudNotes = firebaseRepository.getNotes()
+            _notes.value = cloudNotes
+        }
     }
 }
 

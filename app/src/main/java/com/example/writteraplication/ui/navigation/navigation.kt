@@ -12,6 +12,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.writteraplication.data.repository.PlotRepository
 import com.example.writteraplication.data.repository.CharacterRepository
 import com.example.writteraplication.data.repository.NoteRepository
+import com.example.writteraplication.data.repository.FirebaseNoteRepository
 import com.example.writteraplication.data.repository.TimelineRepository
 import com.example.writteraplication.ui.screens.*
 import com.example.writteraplication.viewmodel.PlotsViewModel
@@ -32,13 +33,14 @@ fun AppNavigation(
     plotRepository: PlotRepository,
     characterRepository: CharacterRepository,
     noteRepository: NoteRepository,
+    firebaseRepository: FirebaseNoteRepository,
     timelineRepository: TimelineRepository,
     settingsViewModel: SettingsViewModel,
     navController: NavHostController = rememberNavController()
 ) {
     val plotsViewModel: PlotsViewModel = viewModel(factory = PlotsViewModelFactory(plotRepository))
     val characterViewModel: CharacterViewModel = viewModel(factory = CharacterViewModelFactory(characterRepository))
-    val noteViewModel: NoteViewModel = viewModel(factory = NoteViewModelFactory(noteRepository))
+    val noteViewModel: NoteViewModel = viewModel(factory = NoteViewModelFactory(noteRepository, firebaseRepository ))
     val timelineViewModel: TimelineViewModel = viewModel(factory = TimelineViewModelFactory(timelineRepository))
     val sharedProjectViewModel: SharedProjectViewModel = viewModel()
 

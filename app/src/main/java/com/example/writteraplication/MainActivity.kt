@@ -11,6 +11,7 @@ import com.example.writteraplication.data.repository.PlotRepository
 import com.example.writteraplication.data.repository.CharacterRepository
 import com.example.writteraplication.data.repository.NoteRepository
 import com.example.writteraplication.data.repository.TimelineRepository
+import com.example.writteraplication.data.repository.FirebaseNoteRepository
 import com.example.writteraplication.local.model.AppDatabase
 import com.example.writteraplication.ui.navigation.AppNavigation
 import com.example.writteraplication.ui.theme.AppTheme
@@ -30,6 +31,7 @@ class MainActivity : ComponentActivity() {
         val noteRepository = NoteRepository(database.noteDao())
         val timelineRepository = TimelineRepository(database.timelineDao(), database.characterDao())
 
+        val firebaseRepository = FirebaseNoteRepository()
         // Create ThemePreferenceManager and LanguagePreferenceManager
         val themeManager = ThemePreferenceManager(applicationContext)
         val languageManager = LanguagePreferenceManager(applicationContext)
@@ -42,6 +44,7 @@ class MainActivity : ComponentActivity() {
                     plotRepository = plotRepository,
                     characterRepository = characterRepository,
                     noteRepository = noteRepository,
+                    firebaseRepository = firebaseRepository,
                     timelineRepository = timelineRepository,
                     settingsViewModel = settingsViewModel
                 )
