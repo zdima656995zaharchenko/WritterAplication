@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">Додаток Письменника</string>
+    <string name="settings">Налаштування</string>
+    <string name="dark_theme">Темна тема</string>
+    <string name="language_ukrainian">Українська мова</string>
+    <string name="menu_title">Меню проєкту</string>
+    <string name="menu_home">Головне меню</string>
+    <string name="menu_plots">Сюжети</string>
+    <string name="menu_characters">Персонажі</string>
+    <string name="menu_notes">Нотатки</string>
+    <string name="menu_timeline">Хронологія</string>
+    <string name="menu_projects">Проєкти</string>
+    <string name="menu_favorites">Улюблені</string>
+    <string name="menu_settings">Налаштування</string>
+    <string name="menu_profile">Профіль</string>
+    <string name="menu_logout">Вийти</string>
+    <string name="welcome_message">Вітаєм, Майбутній Письменику!</string>
+    <string name="create_project">Створити Новий Проєкт</string>
+    <string name="project_editor">Редактор Проєкту</string>
+    <string name="project_name">Назва Проєкту</string>
+    <string name="project_description">Опис Проєкту</string>
+    <string name="save_changes">Зберегти Зміни</string>
+</resources>

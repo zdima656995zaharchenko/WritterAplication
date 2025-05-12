@@ -1,3 +1,4 @@
+
 package com.example.writteraplication.viewmodel
 
 import androidx.lifecycle.ViewModel
@@ -6,6 +7,7 @@ import com.example.writteraplication.data.repository.AuthRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import com.google.firebase.auth.FirebaseAuth
 
 class RegisterViewModel(
     private val authRepository: AuthRepository = AuthRepository()
@@ -14,24 +16,19 @@ class RegisterViewModel(
     private val _registrationState = MutableStateFlow<RegistrationState>(RegistrationState.Idle)
     val registrationState: StateFlow<RegistrationState> = _registrationState
 
-    fun register(email: String, password: String) {
+    fun register(name: String, email: String, password: String) {
         viewModelScope.launch {
             _registrationState.value = RegistrationState.Loading
             val result = authRepository.registerUser(email, password)
-            _registrationState.value = if (result.isSuccess) {
-                RegistrationState.Success
+            if (result.isSuccess) {
+                val userId = FirebaseAuth.getInstance().currentUser?.uid
+                userId?.let {
+                    authRepository.saveUserName(it, name)
+                }
+                _registrationState.value = RegistrationState.Success
             } else {
-                RegistrationState.Error(result.exceptionOrNull()?.message ?: "Unknown error")
+                _registrationState.value = RegistrationState.Error(result.exceptionOrNull()?.message ?: "Unknown error")
             }
         }
     }
-
-    sealed class RegistrationState {
-        object Idle : RegistrationState()
-        object Loading : RegistrationState()
-        object Success : RegistrationState()
-        data class Error(val message: String) : RegistrationState()
-    }
 }
-
-

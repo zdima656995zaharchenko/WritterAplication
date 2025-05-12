@@ -7,9 +7,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.writteraplication.R
 import com.example.writteraplication.local.model.AppDatabase
 import com.example.writteraplication.data.repository.ProjectRepository
 import com.example.writteraplication.viewmodel.ProjectEditorViewModel
@@ -46,21 +48,21 @@ fun ProjectEditorScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Text(
-            text = "Редактор проєкту",
+            text = stringResource(R.string.project_editor),
             style = MaterialTheme.typography.headlineSmall
         )
 
         TextField(
             value = state.title,
             onValueChange = viewModel::onTitleChange,
-            label = { Text("Назва проєкту") },
+            label = { Text(stringResource(R.string.project_name)) },
             modifier = Modifier.fillMaxWidth()
         )
 
         OutlinedTextField(
             value = state.description,
             onValueChange = viewModel::onDescriptionChange,
-            label = { Text("Опис проєкту") },
+            label = { Text(stringResource(R.string.project_description)) },
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -70,7 +72,7 @@ fun ProjectEditorScreen(
             },
             modifier = Modifier.align(Alignment.End)
         ) {
-            Text("Зберегти зміни")
+            Text(stringResource(R.string.save_changes))
         }
     }
 }

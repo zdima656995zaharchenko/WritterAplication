@@ -24,6 +24,8 @@ import com.example.writteraplication.viewmodel.TimelineViewModel
 import com.example.writteraplication.viewmodel.TimelineViewModelFactory
 import com.example.writteraplication.viewmodel.SharedProjectViewModel
 import com.example.writteraplication.viewmodel.SettingsViewModel
+import com.example.writteraplication.ui.components.MainScaffold
+
 
 @Composable
 fun AppNavigation(

@@ -1,4 +1,5 @@
-package com.example.writteraplication.ui.screens
+
+package com.example.writteraplication.ui.components
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -6,9 +7,12 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
+import com.example.writteraplication.R
+import com.example.writteraplication.viewmodel.SettingsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -28,38 +32,38 @@ fun MainScaffold(
         drawerContent = {
             ModalDrawerSheet {
                 Text(
-                    text = "Меню проєкту",
+                    text = stringResource(R.string.menu_title),
                     modifier = Modifier.padding(16.dp),
                     style = MaterialTheme.typography.titleMedium
                 )
 
-                DrawerItem("Головне меню") {
+                DrawerItem(stringResource(R.string.menu_home)) {
                     scope.launch { drawerState.close() }
                     navController.navigate("main_menu")
                 }
 
-                DrawerItem("Сюжети") {
+                DrawerItem(stringResource(R.string.menu_plots)) {
                     scope.launch { drawerState.close() }
                     projectId?.let { id ->
                         navController.navigate("plots/$id")
                     }
                 }
 
-                DrawerItem("Персонажі") {
+                DrawerItem(stringResource(R.string.menu_characters)) {
                     scope.launch { drawerState.close() }
                     projectId?.let { id ->
                         navController.navigate("characters/$id")
                     }
                 }
 
-                DrawerItem("Нотатки") {
+                DrawerItem(stringResource(R.string.menu_notes)) {
                     scope.launch { drawerState.close() }
                     projectId?.let { id ->
                         navController.navigate("notes/$id")
                     }
                 }
 
-                DrawerItem("Хронологія") {
+                DrawerItem(stringResource(R.string.menu_timeline)) {
                     scope.launch { drawerState.close() }
                     projectId?.let { id ->
                         navController.navigate("timeline/$id")
@@ -68,29 +72,29 @@ fun MainScaffold(
 
                 Divider(modifier = Modifier.padding(vertical = 8.dp))
 
-                DrawerItem("Проєкти") {
+                DrawerItem(stringResource(R.string.menu_projects)) {
                     scope.launch { drawerState.close() }
                     navController.navigate("projects")
                 }
 
-                DrawerItem("Улюблені") {
+                DrawerItem(stringResource(R.string.menu_favorites)) {
                     scope.launch { drawerState.close() }
                     navController.navigate("favorites")
                 }
 
-                DrawerItem("Налаштування") {
+                DrawerItem(stringResource(R.string.menu_settings)) {
                     scope.launch { drawerState.close() }
                     navController.navigate("settings")
                 }
 
-                DrawerItem("Профіль") {
+                DrawerItem(stringResource(R.string.menu_profile)) {
                     scope.launch { drawerState.close() }
                     navController.navigate("profile")
                 }
 
                 Divider(modifier = Modifier.padding(vertical = 8.dp))
 
-                DrawerItem("Вийти") {
+                DrawerItem(stringResource(R.string.menu_logout)) {
                     scope.launch { drawerState.close() }
                     navController.navigate("login") {
                         popUpTo("main_menu") { inclusive = true }
@@ -109,7 +113,7 @@ fun MainScaffold(
                         }) {
                             Icon(
                                 imageVector = Icons.Default.Menu,
-                                contentDescription = "Меню"
+                                contentDescription = stringResource(R.string.menu_title)
                             )
                         }
                     }

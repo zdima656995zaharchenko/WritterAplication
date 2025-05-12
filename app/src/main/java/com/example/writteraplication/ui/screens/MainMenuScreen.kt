@@ -5,10 +5,13 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.NavController
+import com.example.writteraplication.ui.components.MainScaffold
+import com.example.writteraplication.R
 
 @Composable
 fun MainMenuScreen(navController: NavController) {
@@ -25,7 +28,7 @@ fun MainMenuScreen(navController: NavController) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Головне меню",
+                text = stringResource(R.string.welcome_message),
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold
             )
@@ -33,7 +36,7 @@ fun MainMenuScreen(navController: NavController) {
             Button(onClick = {
                 navController.navigate("project_editor")
             }) {
-                Text("Create a new project")
+                Text(stringResource(R.string.create_project))
             }
         }
     }

@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.lifecycle.ViewModelProvider
 import com.example.writteraplication.data.preferences.ThemePreferenceManager
+import com.example.writteraplication.data.preferences.LanguagePreferenceManager
 import com.example.writteraplication.data.repository.PlotRepository
 import com.example.writteraplication.data.repository.CharacterRepository
 import com.example.writteraplication.data.repository.NoteRepository
@@ -15,6 +16,9 @@ import com.example.writteraplication.ui.navigation.AppNavigation
 import com.example.writteraplication.ui.theme.AppTheme
 import com.example.writteraplication.viewmodel.SettingsViewModel
 import com.example.writteraplication.viewmodel.SettingsViewModelFactory
+import android.content.Context
+import android.content.res.Configuration
+import java.util.Locale
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -26,9 +30,10 @@ class MainActivity : ComponentActivity() {
         val noteRepository = NoteRepository(database.noteDao())
         val timelineRepository = TimelineRepository(database.timelineDao(), database.characterDao())
 
-        // Create ThemePreferenceManager and SettingsViewModel
+        // Create ThemePreferenceManager and LanguagePreferenceManager
         val themeManager = ThemePreferenceManager(applicationContext)
-        val settingsViewModelFactory = SettingsViewModelFactory(themeManager)
+        val languageManager = LanguagePreferenceManager(applicationContext)
+        val settingsViewModelFactory = SettingsViewModelFactory(themeManager, languageManager)
         val settingsViewModel = ViewModelProvider(this, settingsViewModelFactory)[SettingsViewModel::class.java]
 
         setContent {
@@ -42,5 +47,14 @@ class MainActivity : ComponentActivity() {
                 )
             }
         }
+    }
+
+    override fun attachBaseContext(newBase: Context) {
+        val manager = LanguagePreferenceManager(newBase)
+        val locale = Locale(manager.getLanguage())
+        val config = Configuration()
+        config.setLocale(locale)
+        val context = newBase.createConfigurationContext(config)
+        super.attachBaseContext(context)
     }
 }

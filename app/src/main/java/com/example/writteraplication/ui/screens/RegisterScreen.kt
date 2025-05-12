@@ -1,8 +1,10 @@
+
 package com.example.writteraplication.ui.screens
 
+import android.util.Patterns
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -12,8 +14,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.writteraplication.viewmodel.RegisterViewModel
+import com.example.writteraplication.viewmodel.RegistrationState
 import kotlinx.coroutines.launch
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -34,11 +36,11 @@ fun RegisterScreen(
 
     LaunchedEffect(registrationState) {
         when (registrationState) {
-            is RegisterViewModel.RegistrationState.Success -> onRegistrationSuccess()
-            is RegisterViewModel.RegistrationState.Error -> {
+            is RegistrationState.Success -> onRegistrationSuccess()
+            is RegistrationState.Error -> {
                 coroutineScope.launch {
                     snackbarHostState.showSnackbar(
-                        (registrationState as RegisterViewModel.RegistrationState.Error).message
+                        (registrationState as RegistrationState.Error).message
                     )
                 }
             }
@@ -52,7 +54,7 @@ fun RegisterScreen(
                 title = { Text("До Головного Меню") },
                 navigationIcon = {
                     IconButton(onClick = { onBackToMainMenu() }) {
-                        Icon(Icons.Filled.ArrowBack, contentDescription = "Назад")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Назад")
                     }
                 }
             )
@@ -81,17 +83,24 @@ fun RegisterScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(
-                onClick = { viewModel.register(email, password) },
-                enabled = registrationState !is RegisterViewModel.RegistrationState.Loading
+                onClick = {
+                    if (Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                        viewModel.register(name.trim(), email.trim(), password)
+                    } else {
+                        coroutineScope.launch {
+                            snackbarHostState.showSnackbar("Невірний формат email")
+                        }
+                    }
+                },
+                enabled = registrationState !is RegistrationState.Loading
             ) {
                 Text("Зареєструватися")
             }
 
-            if (registrationState is RegisterViewModel.RegistrationState.Loading) {
+            if (registrationState is RegistrationState.Loading) {
                 Spacer(modifier = Modifier.height(16.dp))
                 CircularProgressIndicator()
             }
         }
     }
 }
-
