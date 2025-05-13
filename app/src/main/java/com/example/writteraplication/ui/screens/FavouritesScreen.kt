@@ -1,3 +1,4 @@
+
 package com.example.writteraplication.ui.screens
 
 import androidx.compose.foundation.layout.*
@@ -16,18 +17,24 @@ import com.example.writteraplication.data.repository.ProjectRepository
 import com.example.writteraplication.local.model.AppDatabase
 import com.example.writteraplication.viewmodel.ProjectViewModel
 import com.example.writteraplication.viewmodel.ProjectViewModelFactory
+import com.example.writteraplication.data.repository.FirebaseProjectRepository
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Delete
 
 @Composable
-fun FavoritesScreen(navController: NavController, padding: PaddingValues) {
+fun FavoritesScreen(
+    navController: NavController,
+    padding: PaddingValues,
+    firebaseProjectRepository: FirebaseProjectRepository // ← додай цей параметр
+) {
     val context = LocalContext.current
     val db = AppDatabase.getDatabase(context)
     val repository = ProjectRepository(db.projectDao())
+
     val viewModel: ProjectViewModel = viewModel(
-        factory = ProjectViewModelFactory(repository)
+        factory = ProjectViewModelFactory(repository, firebaseProjectRepository)
     )
 
     val favoriteProjects = viewModel.projects.filter { it.isFavorite }

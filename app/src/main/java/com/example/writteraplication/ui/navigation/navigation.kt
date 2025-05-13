@@ -4,6 +4,7 @@ package com.example.writteraplication.ui.navigation
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -14,6 +15,10 @@ import com.example.writteraplication.data.repository.CharacterRepository
 import com.example.writteraplication.data.repository.FirebaseCharacterRepository
 import com.example.writteraplication.data.repository.NoteRepository
 import com.example.writteraplication.data.repository.FirebaseNoteRepository
+import com.example.writteraplication.data.repository.FirebasePlotRepository
+import com.example.writteraplication.data.repository.FirebaseTimelineRepository
+import com.example.writteraplication.data.repository.FirebaseProjectRepository
+import com.example.writteraplication.data.repository.ProjectRepository
 import com.example.writteraplication.data.repository.TimelineRepository
 import com.example.writteraplication.ui.screens.*
 import com.example.writteraplication.viewmodel.PlotsViewModel
@@ -27,23 +32,30 @@ import com.example.writteraplication.viewmodel.TimelineViewModelFactory
 import com.example.writteraplication.viewmodel.SharedProjectViewModel
 import com.example.writteraplication.viewmodel.SettingsViewModel
 import com.example.writteraplication.ui.components.MainScaffold
+import com.example.writteraplication.viewmodel.ProjectViewModel
+import com.example.writteraplication.viewmodel.ProjectViewModelFactory
 
 
 @Composable
 fun AppNavigation(
     plotRepository: PlotRepository,
+    firebasePlotRepository: FirebasePlotRepository,
     characterRepository: CharacterRepository,
     firebaseCharacterRepository: FirebaseCharacterRepository,
     noteRepository: NoteRepository,
+    projectRepository: ProjectRepository,
+    firebaseProjectRepository: FirebaseProjectRepository,
     firebaseRepository: FirebaseNoteRepository,
     timelineRepository: TimelineRepository,
+    firebaseTimelineRepository: FirebaseTimelineRepository,
     settingsViewModel: SettingsViewModel,
     navController: NavHostController = rememberNavController()
 ) {
-    val plotsViewModel: PlotsViewModel = viewModel(factory = PlotsViewModelFactory(plotRepository))
+    val plotsViewModel: PlotsViewModel = viewModel(factory = PlotsViewModelFactory(plotRepository,firebasePlotRepository))
     val characterViewModel: CharacterViewModel = viewModel(factory = CharacterViewModelFactory(characterRepository, firebaseCharacterRepository))
     val noteViewModel: NoteViewModel = viewModel(factory = NoteViewModelFactory(noteRepository, firebaseRepository ))
-    val timelineViewModel: TimelineViewModel = viewModel(factory = TimelineViewModelFactory(timelineRepository))
+    val timelineViewModel: TimelineViewModel = viewModel(factory = TimelineViewModelFactory(timelineRepository, firebaseTimelineRepository))
+    val projectViewModel: ProjectViewModel = viewModel(factory = ProjectViewModelFactory(projectRepository, firebaseProjectRepository))
     val sharedProjectViewModel: SharedProjectViewModel = viewModel()
 
     NavHost(
@@ -249,6 +261,7 @@ fun AppNavigation(
                     projectId = projectId
                 ) { padding ->
                     TimelineDetailsScreen(
+                        context = LocalContext.current,
                         id = id,
                         projectId = projectId,
                         timelineViewModel = timelineViewModel,
@@ -261,13 +274,13 @@ fun AppNavigation(
 
         composable("projects") {
             MainScaffold(navController = navController, screenTitle = "Проєкти", projectId = sharedProjectViewModel.currentProjectId) { padding ->
-                ProjectsScreen(navController = navController, padding = padding)
+                ProjectsScreen(navController = navController, padding = padding, firebaseProjectRepository = firebaseProjectRepository)
             }
         }
 
         composable("favorites") {
             MainScaffold(navController = navController, screenTitle = "Улюблені", projectId = sharedProjectViewModel.currentProjectId) { padding ->
-                FavoritesScreen(navController = navController, padding = padding)
+                FavoritesScreen(navController = navController, padding = padding, firebaseProjectRepository = firebaseProjectRepository )
             }
         }
 

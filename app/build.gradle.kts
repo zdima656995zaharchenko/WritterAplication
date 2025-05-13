@@ -54,6 +54,17 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
 
+
+    // Для юніт-тестів
+    testImplementation("junit:junit:4.13.2")
+
+// Для UI-тестів з Jetpack Compose
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.5.0")
+    debugImplementation("androidx.compose.ui:ui-test-manifest:1.5.0")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+// Для навігації (якщо потрібно)
+    androidTestImplementation("androidx.navigation:navigation-testing:2.7.0")
+
     implementation("androidx.navigation:navigation-compose:2.8.9")
     implementation("androidx.room:room-runtime:2.7.1")
     implementation(libs.firebase.firestore.ktx)

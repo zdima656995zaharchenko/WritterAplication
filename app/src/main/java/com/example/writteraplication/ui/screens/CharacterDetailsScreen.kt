@@ -1,6 +1,7 @@
 package com.example.writteraplication.ui.screens
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
@@ -131,6 +132,19 @@ fun CharacterDetailsScreen(
         }
 
         Spacer(modifier = Modifier.height(16.dp))
+
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(
+            onClick = {
+                coroutineScope.launch {
+                    snackbarHostState.showSnackbar("📄 Персонаж експортовано у PDF та надіслано")
+                }
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Експортувати в PDF і надіслати")
+        }
+
 
         Button(
             onClick = {

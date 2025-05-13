@@ -13,6 +13,8 @@ import com.example.writteraplication.data.repository.NoteRepository
 import com.example.writteraplication.data.repository.TimelineRepository
 import com.example.writteraplication.data.repository.FirebaseNoteRepository
 import com.example.writteraplication.data.repository.FirebaseCharacterRepository
+import com.example.writteraplication.data.repository.FirebasePlotRepository
+import com.example.writteraplication.data.repository.FirebaseProjectRepository
 import com.example.writteraplication.local.model.AppDatabase
 import com.example.writteraplication.ui.navigation.AppNavigation
 import com.example.writteraplication.ui.theme.AppTheme
@@ -20,6 +22,8 @@ import com.example.writteraplication.viewmodel.SettingsViewModel
 import com.example.writteraplication.viewmodel.SettingsViewModelFactory
 import android.content.Context
 import android.content.res.Configuration
+import com.example.writteraplication.data.repository.FirebaseTimelineRepository
+import com.example.writteraplication.data.repository.ProjectRepository
 import com.google.firebase.FirebaseApp
 import java.util.Locale
 
@@ -30,6 +34,7 @@ class MainActivity : ComponentActivity() {
         FirebaseApp.initializeApp(this)
 
         val database = AppDatabase.getDatabase(applicationContext)
+        val projectRepository = ProjectRepository(database.projectDao())
         val plotRepository = PlotRepository(database.plotDao())
         val characterRepository = CharacterRepository(database.characterDao())
         val noteRepository = NoteRepository(database.noteDao())
@@ -37,6 +42,10 @@ class MainActivity : ComponentActivity() {
 
         val firebaseRepository = FirebaseNoteRepository()
         val firebaseCharacterRepository = FirebaseCharacterRepository()
+        val firebasePlotRepository = FirebasePlotRepository()
+        val firebaseTimelineRepository = FirebaseTimelineRepository()
+        val firebaseProjectRepository = FirebaseProjectRepository()
+
         // Create ThemePreferenceManager and LanguagePreferenceManager
         val themeManager = ThemePreferenceManager(applicationContext)
         val languageManager = LanguagePreferenceManager(applicationContext)
@@ -51,7 +60,11 @@ class MainActivity : ComponentActivity() {
                     noteRepository = noteRepository,
                     firebaseRepository = firebaseRepository,
                     firebaseCharacterRepository = firebaseCharacterRepository,
+                    firebasePlotRepository = firebasePlotRepository,
                     timelineRepository = timelineRepository,
+                    firebaseTimelineRepository = firebaseTimelineRepository,
+                    projectRepository = projectRepository,
+                    firebaseProjectRepository = firebaseProjectRepository,
                     settingsViewModel = settingsViewModel
                 )
             }

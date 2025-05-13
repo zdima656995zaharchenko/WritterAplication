@@ -8,6 +8,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.example.writteraplication.viewmodel.NoteViewModel
 import com.example.writteraplication.local.model.NoteEntity
@@ -27,6 +28,8 @@ fun NoteDetailsScreen(
 
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
+
+    val context = LocalContext.current
 
     LaunchedEffect(noteId) {
         if (noteId != -1) {
@@ -55,9 +58,19 @@ fun NoteDetailsScreen(
                 modifier = Modifier.padding(bottom = 16.dp)
             )
 
-            OutlinedTextField(value = title, onValueChange = { title = it }, label = { Text("Назва") }, modifier = Modifier.fillMaxWidth())
+            OutlinedTextField(
+                value = title,
+                onValueChange = { title = it },
+                label = { Text("Назва") },
+                modifier = Modifier.fillMaxWidth()
+            )
             Spacer(modifier = Modifier.height(8.dp))
-            OutlinedTextField(value = content, onValueChange = { content = it }, label = { Text("Текст") }, modifier = Modifier.fillMaxWidth())
+            OutlinedTextField(
+                value = content,
+                onValueChange = { content = it },
+                label = { Text("Текст") },
+                modifier = Modifier.fillMaxWidth()
+            )
             Spacer(modifier = Modifier.height(16.dp))
 
             Row {
@@ -106,6 +119,17 @@ fun NoteDetailsScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Синхронізувати з хмарою")
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(
+                onClick = {
+                    noteViewModel.exportNotesToPdfAndSend(context)
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Експортувати в PDF і надіслати")
             }
         }
     }

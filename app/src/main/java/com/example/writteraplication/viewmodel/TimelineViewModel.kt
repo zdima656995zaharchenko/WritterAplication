@@ -1,6 +1,7 @@
 
 package com.example.writteraplication.viewmodel
 
+import android.content.Context
 import java.util.UUID
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -8,10 +9,18 @@ import androidx.lifecycle.viewModelScope
 import com.example.writteraplication.local.model.TimelineEntity
 import com.example.writteraplication.local.model.CharacterEntity
 import com.example.writteraplication.data.repository.TimelineRepository
+import com.example.writteraplication.data.repository.FirebaseTimelineRepository
+import com.example.writteraplication.utils.createPdfFromPlots
+import com.example.writteraplication.utils.createPdfFromTimelines
+import com.example.writteraplication.utils.sendEmailWithAttachment
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
-class TimelineViewModel(private val repository: TimelineRepository) : ViewModel() {
+class TimelineViewModel(
+    private val repository: TimelineRepository,
+    private val firebaseTimelineRepository: FirebaseTimelineRepository
+) : ViewModel() {
 
     private val _timeline = MutableStateFlow<List<TimelineEntity>>(emptyList())
     val timeline: StateFlow<List<TimelineEntity>> = _timeline.asStateFlow()
@@ -61,6 +70,8 @@ class TimelineViewModel(private val repository: TimelineRepository) : ViewModel(
             val result = repository.insertTimeline(timeline)
             Log.d("TimelineViewModel", "✅ Вставка завершена. ID нової події: $result")
 
+            firebaseTimelineRepository.saveTimeline(timeline)
+
             // Оновити список після вставки
             loadTimelineByProject(projectId)
         }
@@ -69,6 +80,7 @@ class TimelineViewModel(private val repository: TimelineRepository) : ViewModel(
     fun updateTimeline(timeline: TimelineEntity) {
         viewModelScope.launch {
             repository.updateTimeline(timeline)
+            firebaseTimelineRepository.saveTimeline(timeline)
             loadTimelineByProject(timeline.projectId)
         }
     }
@@ -99,7 +111,33 @@ class TimelineViewModel(private val repository: TimelineRepository) : ViewModel(
     fun removeEventElement(id: String) {
         _eventElements.value = _eventElements.value.filter { it.id != id }
     }
+
+    fun fetchTimelinesFromCloud() {
+        viewModelScope.launch {
+            val cloudTimelines = firebaseTimelineRepository.getTimelines()
+            _timeline.value = cloudTimelines
+        }
+    }
+
+    fun exportTimelineToPdfAndSend(context: Context) {
+        viewModelScope.launch {
+            try {
+                val cloudTimelines = firebaseTimelineRepository.getTimelines()
+                if (cloudTimelines.isNotEmpty()) {
+                    val pdfFile = createPdfFromTimelines(context, cloudTimelines, "TimelinesExport")
+                    val email = FirebaseAuth.getInstance().currentUser?.email
+                    if (email != null) {
+                        sendEmailWithAttachment(context, pdfFile, email)
+                    } else {
+                        Log.w("TimelineViewModel", "❗ Email користувача не знайдено")
+                    }
+                } else {
+                    Log.w("TimelineViewModel", "❗ Немає сюжетів для експорту")
+                }
+            } catch (e: Exception) {
+                Log.e("TimelineViewModel", "❌ Помилка експорту сюжетів", e)
+            }
+        }
+    }
 }
-
-
 

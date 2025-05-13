@@ -17,19 +17,26 @@ import com.example.writteraplication.local.model.AppDatabase
 import com.example.writteraplication.data.repository.ProjectRepository
 import com.example.writteraplication.viewmodel.ProjectViewModel
 import com.example.writteraplication.viewmodel.ProjectViewModelFactory
+import com.example.writteraplication.data.repository.FirebaseProjectRepository
 import androidx.compose.ui.Alignment
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Delete
-
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.asPaddingValues
 
 @Composable
-fun ProjectsScreen(navController: NavController, padding: PaddingValues) {
+fun ProjectsScreen(
+    navController: NavController,
+    padding: PaddingValues,
+    firebaseProjectRepository: FirebaseProjectRepository
+) {
     val context = LocalContext.current
     val db = AppDatabase.getDatabase(context)
     val repository = ProjectRepository(db.projectDao())
     val viewModel: ProjectViewModel = viewModel(
-        factory = ProjectViewModelFactory(repository)
+        factory = ProjectViewModelFactory(repository, firebaseProjectRepository)
     )
     val projects = viewModel.projects
 
@@ -38,33 +45,53 @@ fun ProjectsScreen(navController: NavController, padding: PaddingValues) {
         viewModel.loadProjects()
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(padding)
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        Text(
-            text = "Проєкти",
-            style = MaterialTheme.typography.headlineSmall
-        )
-
-        Button(
-            onClick = {
-                navController.navigate("project_editor")
-            },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Створити новий проєкт")
+    Scaffold(
+        bottomBar = {
+            Button(
+                onClick = { viewModel.fetchProjectsFromCloud() },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Text("Синхронізувати з хмарою")
+            }
         }
+    ) { innerPadding ->
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(horizontal = 16.dp)
+                .padding(WindowInsets.statusBars.asPaddingValues()), // Додаємо відступ для статус-бара
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            item {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp)
+                ) {
+                    Text(
+                        text = "Плоєкти",
+                        style = MaterialTheme.typography.headlineSmall
+                    )
 
-        Spacer(modifier = Modifier.height(16.dp))
+                    Button(
+                        onClick = {
+                            navController.navigate("project_editor")
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("Створити новий проєкт")
+                    }
+                }
+            }
 
-        if (projects.isEmpty()) {
-            Text("Немає збережених проєктів.")
-        } else {
-            LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            if (projects.isEmpty()) {
+                item {
+                    Text("Немає збережених проєктів.")
+                }
+            } else {
                 items(projects) { project ->
                     Card(
                         onClick = {

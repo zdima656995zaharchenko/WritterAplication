@@ -8,6 +8,8 @@ import com.example.writteraplication.data.repository.CharacterRepository
 import com.example.writteraplication.data.repository.FirebaseCharacterRepository
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import android.content.Context
+import com.example.writteraplication.utils.createPdfFromCharacters
 
 class CharacterViewModel(
     private val repository: CharacterRepository,
@@ -20,7 +22,7 @@ class CharacterViewModel(
     fun loadCharactersByProject(projectId: Int) {
         viewModelScope.launch {
             repository.getCharactersByProject(projectId)
-                .catch { e -> Log.e("CharacterViewModel", "Помилка завантаження персонажів", e) }
+                .catch { e -> Log.e("CharacterViewModel", "Error loading characters", e) }
                 .collect { characters ->
                     _characters.value = characters
                 }
@@ -40,7 +42,7 @@ class CharacterViewModel(
         projectId: Int
     ) {
         viewModelScope.launch {
-            Log.d("CharacterViewModel", "🟡 Додаємо персонажа: $name ($projectId)")
+            Log.d("CharacterViewModel", "Adding character: $name ($projectId)")
             val character = CharacterEntity(
                 name = name,
                 role = role,
@@ -54,9 +56,9 @@ class CharacterViewModel(
                 projectId = projectId
             )
             val result = repository.insertCharacter(character)
-            Log.d("CharacterViewModel", "✅ Вставка завершена. ID нового персонажа: $result")
+            Log.d("CharacterViewModel", "Insert completed. New character ID: $result")
 
-            firebaseCharacterRepository.saveCharacter(character) // 🔄 синхронізація з хмарою
+            firebaseCharacterRepository.saveCharacter(character) // Sync with cloud
             loadCharactersByProject(projectId)
         }
     }
@@ -64,7 +66,7 @@ class CharacterViewModel(
     fun updateCharacter(character: CharacterEntity) {
         viewModelScope.launch {
             repository.updateCharacter(character)
-            firebaseCharacterRepository.saveCharacter(character) // 🔄 оновлення в хмарі
+            firebaseCharacterRepository.saveCharacter(character) // Update in cloud
             loadCharactersByProject(character.projectId)
         }
     }
@@ -72,7 +74,7 @@ class CharacterViewModel(
     fun removeCharacter(character: CharacterEntity) {
         viewModelScope.launch {
             repository.deleteCharacter(character)
-            // (опціонально) firebaseRepository.deleteCharacter(character)
+            // (optional) firebaseRepository.deleteCharacter(character)
             loadCharactersByProject(character.projectId)
         }
     }
@@ -85,6 +87,16 @@ class CharacterViewModel(
         viewModelScope.launch {
             val cloudCharacters = firebaseCharacterRepository.getCharacters()
             _characters.value = cloudCharacters
+        }
+    }
+
+    fun exportCharactersToPdfAndSend(context: Context) {
+        viewModelScope.launch {
+            val cloudCharacters = firebaseCharacterRepository.getCharacters()
+            if (cloudCharacters.isNotEmpty()) {
+                val pdfFile = createPdfFromCharacters(context, cloudCharacters, "CharactersExport")
+                // Code to send the PDF file via email or other means
+            }
         }
     }
 }

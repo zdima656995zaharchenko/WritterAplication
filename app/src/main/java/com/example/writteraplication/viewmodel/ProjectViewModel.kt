@@ -1,3 +1,4 @@
+
 package com.example.writteraplication.viewmodel
 
 import androidx.compose.runtime.mutableStateListOf
@@ -5,9 +6,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.writteraplication.local.model.ProjectEntity
 import com.example.writteraplication.data.repository.ProjectRepository
+import com.example.writteraplication.data.repository.FirebaseProjectRepository
 import kotlinx.coroutines.launch
 
-class ProjectViewModel(private val repository: ProjectRepository) : ViewModel() {
+class ProjectViewModel(
+    private val repository: ProjectRepository,
+    private val firebaseProjectRepository: FirebaseProjectRepository
+) : ViewModel() {
 
     val projects = mutableStateListOf<ProjectEntity>()
     val favoriteProjects = mutableStateListOf<ProjectEntity>()
@@ -16,6 +21,39 @@ class ProjectViewModel(private val repository: ProjectRepository) : ViewModel() 
         viewModelScope.launch {
             projects.clear()
             projects.addAll(repository.getAllProjects())
+        }
+    }
+
+    fun insertProject(project: ProjectEntity) {
+        viewModelScope.launch {
+            repository.insertProject(project)
+            firebaseProjectRepository.saveProject(project)
+            loadProjects()
+        }
+    }
+
+    fun updateProject(project: ProjectEntity) {
+        viewModelScope.launch {
+            repository.updateProject(project)
+            firebaseProjectRepository.saveProject(project)
+            loadProjects()
+        }
+    }
+
+    fun fetchProjectsFromCloud() {
+        viewModelScope.launch {
+            val cloudProjects = firebaseProjectRepository.getProjects()
+
+            // Очистити локальну базу (опціонально, якщо потрібно повністю замінити)
+            projects.clear()
+
+            // Зберегти кожен проєкт у локальну базу
+            cloudProjects.forEach { project ->
+                repository.insertProject(project)
+            }
+
+            // Завантажити з локальної бази
+            loadProjects()
         }
     }
 
@@ -50,7 +88,3 @@ class ProjectViewModel(private val repository: ProjectRepository) : ViewModel() 
         }
     }
 }
-
-
-
-
